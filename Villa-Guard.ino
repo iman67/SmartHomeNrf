@@ -260,7 +260,7 @@ void fourthpage(){
   lcd.clear();
   lcd.print("2) NRF2");
   lcd.setCursor(0,1);
-  lcd.print("3) ALL  <=");  
+  lcd.print("3) ALL   <=");  
 }
 
 
