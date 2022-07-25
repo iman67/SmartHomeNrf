@@ -27,23 +27,34 @@ char enter[4];
 byte rowPins[ROWS] = {5, 4, 3, 2}; 
 byte colPins[COLS] = {8, 9, 7, 6}; 
 int i=0, s=0, attempt=3, auth_counter=0;
-bool auth = false, showmenu = false, entermenu = false, d = false , sleep = true;
-unsigned long myTime;
+bool auth = false, showmenu = false, entermenu = false, d = false, sleep = true;
+unsigned long myTime, sleepTime;
 
 Keypad customKeypad = Keypad(makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS); 
 
 void setup(){
+  Serial.begin(9600);
   ConnectRadio();
   Start();
 }
   
 void loop(){
   char customKey = customKeypad.getKey();
-  if(customKey && i<4 && !auth && sleep==true){
+
+  if(!auth && !customKey && millis()-sleepTime>=30000 && sleep==false){
+    Serial.println(millis());
+    Serial.println(sleepTime);
+    lock();
+    Start();
+    sleep=true;
+  }
+  else if(customKey && i<4 && !auth && sleep==true){
+    sleepTime=millis();
     sleep=false;
     LoginPage();
   }
-  else if(customKey && i<4 && !auth && sleep==false){
+  else if(customKey && i<4 && !auth && sleep==false && millis()-sleepTime<30000){
+     sleepTime=millis();
      debounce();
      lcd.print('*');
      if(customKey==pass[i])  auth_counter++;
@@ -137,7 +148,6 @@ void loop(){
     else if(i==3 && entermenu==false && d==false)   AllON();
     else if(i==3 && entermenu==true && d==true)     AllOFF();
     else if(i==3 && entermenu==true && d==false)    AllON();
-    
  }
      
      
@@ -176,9 +186,9 @@ void LoginPage(){
 }
 
 void debounce(){
-  myTime = 0;
   myTime = millis();
-  if(myTime==250) return;
+  while(millis()-myTime<=250)
+  return;
 }
 
 void ResetSystem(){
@@ -251,6 +261,7 @@ void lock(){
   lcd.clear();
   lcd.print("  Villa Locked  ");
   sleep=true;
+  attempt=3;
   delay(2000);
 }
 
