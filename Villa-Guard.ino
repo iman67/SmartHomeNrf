@@ -27,7 +27,7 @@ char enter[4];
 byte rowPins[ROWS] = {5, 4, 3, 2}; 
 byte colPins[COLS] = {8, 9, 7, 6}; 
 int i=0, s=0, attempt=3, auth_counter=0;
-bool auth = false, showmenu = false, entermenu = false, d = false, sleep = true;
+bool auth = false, showmenu = false, entermenu = false, d = false, sleep = true, back;
 unsigned long myTime, sleepTime=0;
 
 Keypad customKeypad = Keypad(makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS); 
@@ -39,7 +39,10 @@ void setup(){
 void loop(){
   char customKey = customKeypad.getKey();
 
-  if(millis()-sleepTime>=45000 && !customKey)   lcd.noBacklight(); 
+  if(millis()-sleepTime>=45000 && !customKey){
+    lcd.noBacklight(); 
+    back=false;
+  }
   
   if(!auth && !customKey && millis()-sleepTime>=30000 && sleep==false){
     slept();
@@ -74,7 +77,7 @@ void loop(){
       ResetSystem();
    }
 
-   if(auth && showmenu==false && entermenu==false){
+   if(auth && showmenu==false && entermenu==false && back==true){
     if(i==0){
       firstpage();
       showmenu=true;
@@ -92,8 +95,8 @@ void loop(){
       showmenu=true;
     }
    }
-
-   else if(customKey && auth && showmenu==true){
+   else if(customKey && auth && showmenu==true && back==false)  debounce();
+   else if(customKey && auth && showmenu==true && back==true){
     debounce();
     if(customKey=='A' && entermenu==false){
       if(i>0)  i--;
@@ -163,6 +166,7 @@ void Start(){
   i=0;
   showmenu=false;
   entermenu=false;
+  back=true;
   ConnectRadio();
   lcd.init();
   lcd.backlight();
@@ -176,6 +180,8 @@ void LoginPage(){
   sleepTime=millis();
   sleep=false;
   lcd.backlight();
+  delay(200);
+  ConnectRadio();
   lcd.clear();
   lcd.print("Enter Passcode:"); 
   lcd.setCursor(0,1);
@@ -185,6 +191,7 @@ void debounce(){
   sleepTime=millis();
   myTime = millis();
   lcd.backlight();
+  back=true;
   while(millis()-myTime<=250)
   return;
 }
@@ -210,7 +217,7 @@ void loggedin(){
   auth=true;
   attempt=3;
   i=0;
-  delay(1500);
+  delay(2000);
   lcd.clear();
 }
 void failed(){
