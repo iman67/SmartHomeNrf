@@ -22,39 +22,37 @@ char hexaKeys[ROWS][COLS] = {
   {'*', '0', '#', 'D'}
 };
 
-char pass[4]={'X', 'X', 'X', 'X'};
+char pass[4]={'1', '3', '8', '1'};
 char enter[4];
 byte rowPins[ROWS] = {5, 4, 3, 2}; 
 byte colPins[COLS] = {8, 9, 7, 6}; 
 int i=0, s=0, attempt=3, auth_counter=0;
 bool auth = false, showmenu = false, entermenu = false, d = false, sleep = true;
-unsigned long myTime, sleepTime;
+unsigned long myTime, sleepTime=0;
 
 Keypad customKeypad = Keypad(makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS); 
 
 void setup(){
   Serial.begin(9600);
   ConnectRadio();
+  lcd.backlight();
   Start();
 }
   
 void loop(){
   char customKey = customKeypad.getKey();
 
+  if(millis()-sleepTime>=45000 && !customKey)   lcd.noBacklight(); 
+  
   if(!auth && !customKey && millis()-sleepTime>=30000 && sleep==false){
-    Serial.println(millis());
-    Serial.println(sleepTime);
     slept();
     Start();
     sleep=true;
   }
   else if(customKey && i<4 && !auth && sleep==true){
-    sleepTime=millis();
-    sleep=false;
     LoginPage();
   }
   else if(customKey && i<4 && !auth && sleep==false && millis()-sleepTime<30000){
-     sleepTime=millis();
      debounce();
      lcd.print('*');
      if(customKey==pass[i])  auth_counter++;
@@ -173,20 +171,24 @@ void Start(){
   entermenu=false;
   lcd.init();
   lcd.clear();         
-  lcd.backlight();
   lcd.print("  Villa  Guard  ");
   lcd.setCursor(0,1);
   lcd.print(" Kasra     Iman ");
 }
 
 void LoginPage(){
+  sleepTime=millis();
+  sleep=false;
+  lcd.backlight();
   lcd.clear();
   lcd.print("Enter Passcode:"); 
   lcd.setCursor(0,1);
 }
 
 void debounce(){
+  sleepTime=millis();
   myTime = millis();
+  lcd.backlight();
   while(millis()-myTime<=250)
   return;
 }
@@ -197,6 +199,7 @@ void ResetSystem(){
   i=0;
   showmenu=false;
   entermenu=false;
+  lcd.backlight();
   lcd.clear();
   lcd.print("Enter Passcode:"); 
   lcd.setCursor(0,1);
