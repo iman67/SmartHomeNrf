@@ -33,9 +33,6 @@ unsigned long myTime, sleepTime=0;
 Keypad customKeypad = Keypad(makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS); 
 
 void setup(){
-  Serial.begin(9600);
-  ConnectRadio();
-  lcd.backlight();
   Start();
 }
   
@@ -65,7 +62,6 @@ void loop(){
     if(auth_counter==4)   loggedin();
     else{
       failed();      
-      ConnectRadio();
       ResetSystem();
     }
     i=0;
@@ -74,7 +70,6 @@ void loop(){
    if(attempt==0 && !auth)
    {
       BuzzAlarm();
-      ConnectRadio();
       attempt=3;
       ResetSystem();
    }
@@ -130,7 +125,6 @@ void loop(){
     else if(customKey=='D'){
       if(i==0){
         lock();
-        ConnectRadio();
         attempt=3;
         Start();
     }
@@ -169,7 +163,9 @@ void Start(){
   i=0;
   showmenu=false;
   entermenu=false;
+  ConnectRadio();
   lcd.init();
+  lcd.backlight();
   lcd.clear();         
   lcd.print("  Villa  Guard  ");
   lcd.setCursor(0,1);
@@ -199,6 +195,7 @@ void ResetSystem(){
   i=0;
   showmenu=false;
   entermenu=false;
+  ConnectRadio();
   lcd.backlight();
   lcd.clear();
   lcd.print("Enter Passcode:"); 
@@ -336,5 +333,4 @@ void AllOFF(){
   ConnectRadio();
   const char text4[] = "2 LOW \n";
   radio.write(&text4, sizeof(text4));
-  
 }
