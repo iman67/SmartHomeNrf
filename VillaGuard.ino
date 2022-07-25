@@ -268,7 +268,7 @@ void lock(){
 
 void slept(){
   lcd.clear();
-  lcd.print("  Villa Locked  ");
+  lcd.print("  Guard  Sleep  ");
   sleep=true;
   attempt=3;
   delay(2000);
