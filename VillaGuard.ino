@@ -22,7 +22,7 @@ char hexaKeys[ROWS][COLS] = {
   {'*', '0', '#', 'D'}
 };
 
-char pass[4]={'1', '3', '8', '1'};
+char pass[4]={'X', 'X', 'X', 'X'};
 char enter[4];
 byte rowPins[ROWS] = {5, 4, 3, 2}; 
 byte colPins[COLS] = {8, 9, 7, 6}; 
