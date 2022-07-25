@@ -44,7 +44,7 @@ void loop(){
   if(!auth && !customKey && millis()-sleepTime>=30000 && sleep==false){
     Serial.println(millis());
     Serial.println(sleepTime);
-    lock();
+    slept();
     Start();
     sleep=true;
   }
@@ -258,6 +258,15 @@ void fourthpage(){
 
 
 void lock(){
+  lcd.clear();
+  lcd.print("  Villa Locked  ");
+  sleep=true;
+  attempt=3;
+  delay(2000);
+}
+
+
+void slept(){
   lcd.clear();
   lcd.print("  Villa Locked  ");
   sleep=true;
